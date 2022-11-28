@@ -6,20 +6,26 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { app } from '../firebase/config';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const loginHandler = async () => {
-    const auth = getAuth();
+    setLoading(true);
+    const auth = getAuth(app);
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      navigation.navigate('Home');
+      setLoading(false);
     } catch (err) {
       alert(err.message);
+      setLoading(false);
     }
   };
 
@@ -48,17 +54,32 @@ const LoginScreen = ({ navigation }) => {
         />
       </View>
 
-      <TouchableOpacity
-        onPress={loginHandler}
-        style={{
-          width: '90%',
-          justifyContent: 'center',
-        }}
-      >
-        <View style={[styles.loginButtonContainer, styles.shadowProps]}>
-          <Text style={styles.loginButtonText}>Log In</Text>
+      {loading ? (
+        <View
+          style={[
+            styles.loginButtonContainer,
+            styles.shadowProps,
+            {
+              width: '90%',
+              justifyContent: 'center',
+            },
+          ]}
+        >
+          <Text style={styles.loginButtonText}>Loading ...</Text>
         </View>
-      </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={loginHandler}
+          style={{
+            width: '90%',
+            justifyContent: 'center',
+          }}
+        >
+          <View style={[styles.loginButtonContainer, styles.shadowProps]}>
+            <Text style={styles.loginButtonText}>Log In</Text>
+          </View>
+        </TouchableOpacity>
+      )}
 
       <View style={styles.signInButtonContainer}>
         <Text style={styles.signInText}>Don't have an account? </Text>

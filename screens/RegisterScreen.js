@@ -7,11 +7,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React, { useState } from 'react';
-import {
-  createUserWithEmailAndPassword,
-  getAuth,
-  updateProfile,
-} from 'firebase/auth';
+
+import { auth } from '../firebase/config';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 const RegisterScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -21,8 +19,7 @@ const RegisterScreen = ({ navigation }) => {
 
   const [loading, setLoading] = useState(false);
 
-  const registerHandler = async () => {
-    const auth = getAuth();
+  const register = async () => {
     setLoading(true);
     try {
       const { user } = await createUserWithEmailAndPassword(
@@ -30,11 +27,29 @@ const RegisterScreen = ({ navigation }) => {
         email,
         password,
       );
+
+      await updateProfile(user, { displayName: username });
+
+      navigation.navigate('Home');
       setLoading(false);
     } catch (err) {
       alert(err.message);
       setLoading(false);
     }
+  };
+
+  const registerHandler = async () => {
+    if (
+      username === '' ||
+      email === '' ||
+      password === '' ||
+      confirmPassword === ''
+    ) {
+      alert('Preencha todos os campos');
+      return;
+    }
+
+    register();
   };
 
   return (
@@ -76,17 +91,32 @@ const RegisterScreen = ({ navigation }) => {
         />
       </View>
 
-      <TouchableOpacity
-        onPress={registerHandler}
-        style={{
-          width: '90%',
-          justifyContent: 'center',
-        }}
-      >
-        <View style={[styles.registerButtonContainer, styles.shadowProps]}>
-          <Text style={styles.registerButtonText}>Sign Up</Text>
+      {loading ? (
+        <View
+          style={[
+            styles.registerButtonContainer,
+            styles.shadowProps,
+            {
+              width: '90%',
+              justifyContent: 'center',
+            },
+          ]}
+        >
+          <Text style={styles.registerButtonText}>Loading ...</Text>
         </View>
-      </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={registerHandler}
+          style={{
+            width: '90%',
+            justifyContent: 'center',
+          }}
+        >
+          <View style={[styles.registerButtonContainer, styles.shadowProps]}>
+            <Text style={styles.registerButtonText}>Sign Up</Text>
+          </View>
+        </TouchableOpacity>
+      )}
 
       <View style={styles.loginButtonContainer}>
         <Text style={styles.loginText}>Already have an account? </Text>
