@@ -19,6 +19,14 @@ const RegisterScreen = ({ navigation }) => {
 
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigation.navigate('Home');
+      }
+    });
+  });
+
   const register = async () => {
     setLoading(true);
     try {
@@ -30,7 +38,7 @@ const RegisterScreen = ({ navigation }) => {
 
       await updateProfile(user, { displayName: username });
 
-      navigation.navigate('Home');
+      // navigation.navigate('Home');
       setLoading(false);
     } catch (err) {
       alert(err.message);

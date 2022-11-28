@@ -6,22 +6,28 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import { app } from '../firebase/config';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useEffect, useState } from 'react';
+import { auth } from '../firebase/config';
+import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigation.navigate('Home');
+      }
+    });
+  });
+
   const loginHandler = async () => {
     setLoading(true);
-    const auth = getAuth(app);
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigation.navigate('Home');
       setLoading(false);
     } catch (err) {
       alert(err.message);
