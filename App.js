@@ -4,40 +4,47 @@ import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// Context
-import { AuthContextProvider } from './context/AuthContext';
-
 // Import de páginas
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import NewPost from './screens/NewPost';
+import Posts from './screens/Posts';
 
 // Método para criar o stack
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <AuthContextProvider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            options={{ headerShown: false }}
-            name='Login'
-            component={LoginScreen}
-          />
-          <Stack.Screen
-            options={{ headerShown: false }}
-            name='Register'
-            component={RegisterScreen}
-          />
-          <Stack.Screen
-            options={{ headerShown: false }}
-            name='Home'
-            component={HomeScreen}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AuthContextProvider>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name='Login'
+          component={LoginScreen}
+        />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name='Register'
+          component={RegisterScreen}
+        />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name='Home'
+          component={HomeScreen}
+        />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name='New'
+          component={NewPost}
+        />
+        <Stack.Screen
+          // options={{ headerShown: false }}
+          name='Posts'
+          component={Posts}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 

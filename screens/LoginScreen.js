@@ -4,7 +4,9 @@ import {
   Text,
   TextInput,
   View,
-  TouchableOpacity,
+  Pressable,
+  StatusBar,
+  Platform,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { auth } from '../firebase/config';
@@ -21,7 +23,7 @@ const LoginScreen = ({ navigation }) => {
         navigation.navigate('Home');
       }
     });
-  });
+  }, [auth]);
 
   const loginHandler = async () => {
     setLoading(true);
@@ -37,7 +39,10 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     /* Keyboard Avoiding view - Faz com que quando o telefone abrir o teclado não cubra os inputs*/
-    <KeyboardAvoidingView style={styles.container} behavior='padding'>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       {/* View é uma div */}
 
       <Text style={styles.title}>Log In</Text>
@@ -74,7 +79,7 @@ const LoginScreen = ({ navigation }) => {
           <Text style={styles.loginButtonText}>Loading ...</Text>
         </View>
       ) : (
-        <TouchableOpacity
+        <Pressable
           onPress={loginHandler}
           style={{
             width: '90%',
@@ -84,17 +89,17 @@ const LoginScreen = ({ navigation }) => {
           <View style={[styles.loginButtonContainer, styles.shadowProps]}>
             <Text style={styles.loginButtonText}>Log In</Text>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       )}
 
       <View style={styles.signInButtonContainer}>
         <Text style={styles.signInText}>Don't have an account? </Text>
-        <TouchableOpacity
+        <Pressable
           onPress={() => navigation.navigate('Register')}
           style={styles.signInButton}
         >
           <Text style={[styles.signInText, { color: '#FF6969' }]}>Sign In</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </KeyboardAvoidingView>
   );
@@ -107,6 +112,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   title: {
     color: '#515C6F',
@@ -123,7 +129,7 @@ const styles = StyleSheet.create({
 
   input: {
     height: 60,
-    borderRadius: '10%',
+    borderRadius: 10,
     color: '#515C6F',
     fontSize: 15,
     paddingTop: 5,
@@ -143,7 +149,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FF6969',
-    borderRadius: '50%',
+    borderRadius: 50,
     boxShadow: '0 0 10 0 rgba(0,0,0,0.3)',
   },
   loginButtonText: {
@@ -168,5 +174,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
+    elevation: 1,
   },
 });

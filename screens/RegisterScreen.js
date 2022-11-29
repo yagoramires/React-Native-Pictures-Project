@@ -4,12 +4,18 @@ import {
   Text,
   TextInput,
   View,
-  TouchableOpacity,
+  Pressable,
+  Platform,
+  StatusBar,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { auth } from '../firebase/config';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  updateProfile,
+} from 'firebase/auth';
 
 const RegisterScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -25,7 +31,7 @@ const RegisterScreen = ({ navigation }) => {
         navigation.navigate('Home');
       }
     });
-  });
+  }, [auth]);
 
   const register = async () => {
     setLoading(true);
@@ -62,7 +68,10 @@ const RegisterScreen = ({ navigation }) => {
 
   return (
     /* Keyboard Avoiding view - Faz com que quando o telefone abrir o teclado não cubra os inputs*/
-    <KeyboardAvoidingView style={styles.container} behavior='padding'>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       {/* View é uma div */}
 
       <Text style={styles.title}>Sign Up</Text>
@@ -113,7 +122,7 @@ const RegisterScreen = ({ navigation }) => {
           <Text style={styles.registerButtonText}>Loading ...</Text>
         </View>
       ) : (
-        <TouchableOpacity
+        <Pressable
           onPress={registerHandler}
           style={{
             width: '90%',
@@ -123,17 +132,17 @@ const RegisterScreen = ({ navigation }) => {
           <View style={[styles.registerButtonContainer, styles.shadowProps]}>
             <Text style={styles.registerButtonText}>Sign Up</Text>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       )}
 
       <View style={styles.loginButtonContainer}>
         <Text style={styles.loginText}>Already have an account? </Text>
-        <TouchableOpacity
+        <Pressable
           onPress={() => navigation.navigate('Login')}
           style={styles.loginButton}
         >
           <Text style={[styles.loginText, { color: '#FF6969' }]}>Log In</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </KeyboardAvoidingView>
   );
@@ -146,6 +155,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   title: {
     color: '#515C6F',
@@ -162,7 +172,7 @@ const styles = StyleSheet.create({
 
   input: {
     height: 60,
-    borderRadius: '10%',
+    borderRadius: 10,
     color: '#515C6F',
     fontSize: 15,
     paddingTop: 5,
@@ -182,7 +192,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FF6969',
-    borderRadius: '50%',
+    borderRadius: 50,
     boxShadow: '0 0 10 0 rgba(0,0,0,0.3)',
   },
   registerButtonText: {
@@ -205,7 +215,8 @@ const styles = StyleSheet.create({
   shadowProps: {
     shadowColor: '#171717',
     shadowOffset: { width: -2, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.4,
     shadowRadius: 3,
+    elevation: 3,
   },
 });
