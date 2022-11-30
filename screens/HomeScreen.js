@@ -1,6 +1,9 @@
 import {
   KeyboardAvoidingView,
+  Platform,
   Pressable,
+  ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -10,6 +13,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth, logout } from '../firebase/config';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HomeScreen = ({ navigation }) => {
   useEffect(() => {
@@ -21,36 +25,52 @@ const HomeScreen = ({ navigation }) => {
   }, [auth]);
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <Pressable onPress={logout}>
-        <Text>Logout</Text>
-      </Pressable>
-      <Pressable
-        onPress={() => {
-          navigation.navigate('New');
-        }}
-        style={{ width: '70%' }}
-      >
-        <View style={[styles.card, styles.shadowProps]}>
-          <Icon name='camera-alt' size={150} style={{ color: '#515C6F' }} />
-          <Text style={styles.text}>Take a picture</Text>
-        </View>
-      </Pressable>
-      <Pressable
-        onPress={() => {
-          navigation.navigate('Posts');
-        }}
-        style={{ width: '70%' }}
-      >
-        <View style={[styles.card, styles.shadowProps]}>
-          <Icon name='photo-library' size={150} style={{ color: '#515C6F' }} />
-          <Text style={styles.text}>See others pictures</Text>
-        </View>
-      </Pressable>
-    </KeyboardAvoidingView>
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        <KeyboardAvoidingView
+          style={styles.app}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <View
+            style={{
+              width: '90%',
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+            }}
+          >
+            <Pressable onPress={logout}>
+              <Icon name='logout' size={20} style={{ color: '#ff6969' }} />
+            </Pressable>
+          </View>
+          <Pressable
+            onPress={() => {
+              navigation.navigate('New');
+            }}
+            style={{ width: '70%' }}
+          >
+            <View style={[styles.card, styles.shadowProps]}>
+              <Icon name='camera-alt' size={150} style={{ color: '#515C6F' }} />
+              <Text style={styles.text}>Take a picture</Text>
+            </View>
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              navigation.navigate('Posts');
+            }}
+            style={{ width: '70%' }}
+          >
+            <View style={[styles.card, styles.shadowProps]}>
+              <Icon
+                name='photo-library'
+                size={150}
+                style={{ color: '#515C6F' }}
+              />
+              <Text style={styles.text}>See others pictures</Text>
+            </View>
+          </Pressable>
+        </KeyboardAvoidingView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -59,12 +79,14 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-evenly',
+    paddingTop: StatusBar.currentHeight,
+  },
+  app: {
     alignItems: 'center',
-    flexDirection: 'column',
   },
 
   card: {
+    marginTop: 20,
     height: 250,
     justifyContent: 'center',
     alignItems: 'center',

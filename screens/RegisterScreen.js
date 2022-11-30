@@ -16,6 +16,7 @@ import {
   onAuthStateChanged,
   updateProfile,
 } from 'firebase/auth';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const RegisterScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -67,84 +68,93 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   return (
-    /* Keyboard Avoiding view - Faz com que quando o telefone abrir o teclado não cubra os inputs*/
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      {/* View é uma div */}
-
-      <Text style={styles.title}>Sign Up</Text>
-
-      <View style={styles.inputsContainer}>
-        {/* Input de texto */}
-        <TextInput
-          placeholder='Name'
-          value={username}
-          onChangeText={(text) => setUsername(text)}
-          style={[styles.input, styles.shadowProps, { shadowOpacity: 0.1 }]}
-        />
-        <TextInput
-          placeholder='Email'
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-          style={[styles.input, styles.shadowProps, { shadowOpacity: 0.1 }]}
-        />
-
-        <TextInput
-          placeholder='Password'
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-          style={[styles.input, styles.shadowProps, { shadowOpacity: 0.1 }]}
-          secureTextEntry
-        />
-
-        <TextInput
-          placeholder='Confirm Password'
-          value={confirmPassword}
-          onChangeText={(text) => setConfirmPassword(text)}
-          style={[styles.input, styles.shadowProps, { shadowOpacity: 0.1 }]}
-          secureTextEntry
-        />
-      </View>
-
-      {loading ? (
-        <View
-          style={[
-            styles.registerButtonContainer,
-            styles.shadowProps,
-            {
-              width: '90%',
-              justifyContent: 'center',
-            },
-          ]}
+    <SafeAreaView>
+      <ScrollView>
+        /* Keyboard Avoiding view - Faz com que quando o telefone abrir o
+        teclado não cubra os inputs*/
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          <Text style={styles.registerButtonText}>Loading ...</Text>
-        </View>
-      ) : (
-        <Pressable
-          onPress={registerHandler}
-          style={{
-            width: '90%',
-            justifyContent: 'center',
-          }}
-        >
-          <View style={[styles.registerButtonContainer, styles.shadowProps]}>
-            <Text style={styles.registerButtonText}>Sign Up</Text>
+          {/* View é uma div */}
+
+          <Text style={styles.title}>Sign Up</Text>
+
+          <View style={styles.inputsContainer}>
+            {/* Input de texto */}
+            <TextInput
+              placeholder='Name'
+              value={username}
+              onChangeText={(text) => setUsername(text)}
+              style={[styles.input, styles.shadowProps, { shadowOpacity: 0.1 }]}
+            />
+            <TextInput
+              placeholder='Email'
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+              style={[styles.input, styles.shadowProps, { shadowOpacity: 0.1 }]}
+            />
+
+            <TextInput
+              placeholder='Password'
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              style={[styles.input, styles.shadowProps, { shadowOpacity: 0.1 }]}
+              secureTextEntry
+            />
+
+            <TextInput
+              placeholder='Confirm Password'
+              value={confirmPassword}
+              onChangeText={(text) => setConfirmPassword(text)}
+              style={[styles.input, styles.shadowProps, { shadowOpacity: 0.1 }]}
+              secureTextEntry
+            />
           </View>
-        </Pressable>
-      )}
 
-      <View style={styles.loginButtonContainer}>
-        <Text style={styles.loginText}>Already have an account? </Text>
-        <Pressable
-          onPress={() => navigation.navigate('Login')}
-          style={styles.loginButton}
-        >
-          <Text style={[styles.loginText, { color: '#FF6969' }]}>Log In</Text>
-        </Pressable>
-      </View>
-    </KeyboardAvoidingView>
+          {loading ? (
+            <View
+              style={[
+                styles.registerButtonContainer,
+                styles.shadowProps,
+                {
+                  width: '90%',
+                  justifyContent: 'center',
+                },
+              ]}
+            >
+              <Text style={styles.registerButtonText}>Loading ...</Text>
+            </View>
+          ) : (
+            <Pressable
+              onPress={registerHandler}
+              style={{
+                width: '90%',
+                justifyContent: 'center',
+              }}
+            >
+              <View
+                style={[styles.registerButtonContainer, styles.shadowProps]}
+              >
+                <Text style={styles.registerButtonText}>Sign Up</Text>
+              </View>
+            </Pressable>
+          )}
+
+          <View style={styles.loginButtonContainer}>
+            <Text style={styles.loginText}>Already have an account? </Text>
+            <Pressable
+              onPress={() => navigation.navigate('Login')}
+              style={styles.loginButton}
+            >
+              <Text style={[styles.loginText, { color: '#FF6969' }]}>
+                Log In
+              </Text>
+            </Pressable>
+          </View>
+        </KeyboardAvoidingView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

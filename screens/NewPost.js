@@ -8,6 +8,7 @@ import {
   View,
   StatusBar,
   KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -16,15 +17,44 @@ import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { auth, storage, db } from '../firebase/config';
 
-import { collection, addDoc, Timestamp, setDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+// import * as Location from 'expo-location';
 
 const NewPost = ({ navigation }) => {
   const [image, setImage] = useState();
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
 
-  const [imageURL, setImageURL] = useState('');
   const [progress, setProgress] = useState(0);
+
+  ////////////////////////////////////////////////////////
+
+  // const [location, setLocation] = useState(null);
+  // const [errorMsg, setErrorMsg] = useState(null);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== 'granted') {
+  //       setErrorMsg('Permission to access location was denied');
+  //       return;
+  //     }
+
+  //     let location = await Location.getCurrentPositionAsync({});
+  //     setLocation(location);
+  //   })();
+  // }, []);
+
+  // let text = 'Waiting..';
+  // if (errorMsg) {
+  //   text = errorMsg;
+  // } else if (location) {
+  //   text = JSON.stringify(location);
+  // }
+
+  ////////////////////////////////////////////////////////
 
   const imagePickerCall = async (type) => {
     let data;
@@ -76,6 +106,11 @@ const NewPost = ({ navigation }) => {
       async () => {
         const url = await getDownloadURL(uploadTask.snapshot.ref);
         createDocInCollection(url, generateName);
+        alert('Post adicionado com sucesso!');
+        setImage();
+        setDescription('');
+        setLocation('');
+        setProgress(0);
       },
     );
   };
@@ -91,91 +126,101 @@ const NewPost = ({ navigation }) => {
       image: url,
       createdAt: Timestamp.now(),
     };
-    console.log(data);
+
     await addDoc(ref, data);
+    setImage();
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      {/* Menu de navegação */}
-      <View style={styles.navbar}>
-        <Pressable onPress={() => navigation.navigate('Home')}>
-          <Icon name='arrow-back-ios' size={30} style={{ color: '#FF6969' }} />
-        </Pressable>
-        <Text style={{ fontSize: 25, fontWeight: '700', color: '#FF6969' }}>
-          Upload
-        </Text>
-        <Text>{progress}</Text>
-      </View>
+    <SafeAreaView>
+      <ScrollView>
+        <KeyboardAvoidingView style={styles.container} behavior={'padding'}>
+          {/* Menu de navegação */}
+          <View style={styles.navbar}>
+            <Pressable onPress={() => navigation.goBack()}>
+              <Icon
+                name='arrow-back-ios'
+                size={30}
+                style={{ color: '#FF6969' }}
+              />
+            </Pressable>
+            <Text style={{ fontSize: 25, fontWeight: '700', color: '#FF6969' }}>
+              Upload
+            </Text>
+          </View>
 
-      {/* Imagem de preview */}
-      {image && (
-        <Image source={{ uri: image.uri }} style={styles.previewImage} />
-      )}
-      {/* Botões de adicionar imagem */}
-      <View style={{ flexDirection: 'row' }}>
-        <Pressable
-          onPress={() => imagePickerCall('camera')}
-          style={styles.buttonsContainer}
-        >
-          <Icon name='add-a-photo' size={30} style={{ color: '#515C6F' }} />
-          <Text style={styles.buttonsTexts}>Take a picture</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => imagePickerCall('gallery')}
-          style={styles.buttonsContainer}
-        >
-          <Icon name='collections' size={30} style={{ color: '#515C6F' }} />
-          <Text style={styles.buttonsTexts}>Select from gallery</Text>
-        </Pressable>
-      </View>
-      {/* Input de descrição */}
-      <View style={styles.inputsContainer}>
-        <Text style={styles.inputsLabel}>
-          Write a brief description about what you see
-        </Text>
-        <TextInput
-          style={[
-            styles.input,
-            styles.shadowProps,
-            {
-              height: 200,
-              textAlignVertical: 'top',
-              paddingTop: 15,
-              shadowOpacity: 0.1,
-            },
-          ]}
-          multiline={true}
-          numberOfLines={10}
-          placeholder='Write your description'
-          value={description}
-          onChangeText={(text) => setDescription(text)}
-        />
-      </View>
-      {/* Input de Localização */}
-      <View style={[styles.inputsContainer, styles.shadowProps]}>
-        <Text style={styles.inputsLabel}>Location</Text>
-        <TextInput
-          placeholder='Write your location'
-          style={[styles.input, styles.shadowProps, { shadowOpacity: 0.1 }]}
-          value={location}
-          onChangeText={(text) => setLocation(text)}
-        />
-      </View>
-      {/* Botão de submit */}
-      <Pressable
-        onPress={uploadImage}
-        style={[styles.submitBtnContainer, styles.shadowProps]}
-      >
-        <Text style={styles.submitBtnText}>UPLOAD FILE</Text>
-        <View style={styles.submitBtnCircle}>
-          <Icon style={styles.submitBtn} name='arrow-forward-ios' size={20} />
-        </View>
-      </Pressable>
-    </KeyboardAvoidingView>
+          {/* Imagem de preview */}
+          {image && (
+            <Image source={{ uri: image.uri }} style={styles.previewImage} />
+          )}
+          {/* Botões de adicionar imagem */}
+          <View style={{ flexDirection: 'row' }}>
+            <Pressable
+              onPress={() => imagePickerCall('camera')}
+              style={styles.buttonsContainer}
+            >
+              <Icon name='add-a-photo' size={30} style={{ color: '#515C6F' }} />
+              <Text style={styles.buttonsTexts}>Take a picture</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => imagePickerCall('gallery')}
+              style={styles.buttonsContainer}
+            >
+              <Icon name='collections' size={30} style={{ color: '#515C6F' }} />
+              <Text style={styles.buttonsTexts}>Select from gallery</Text>
+            </Pressable>
+          </View>
+          {/* Input de descrição */}
+          <View style={styles.inputsContainer}>
+            <Text style={styles.inputsLabel}>
+              Write a brief description about what you see
+            </Text>
+            <TextInput
+              style={[
+                styles.input,
+                styles.shadowProps,
+                {
+                  height: 200,
+                  textAlignVertical: 'top',
+                  paddingTop: 15,
+                  shadowOpacity: 0.1,
+                },
+              ]}
+              multiline={true}
+              numberOfLines={10}
+              placeholder='Write your description'
+              value={description}
+              onChangeText={(text) => setDescription(text)}
+            />
+          </View>
+          {/* Input de Localização */}
+          <View style={[styles.inputsContainer, styles.shadowProps]}>
+            <Text style={styles.inputsLabel}>Location</Text>
+            <TextInput
+              placeholder='Write your location'
+              style={[styles.input, styles.shadowProps, { shadowOpacity: 0.1 }]}
+              value={location}
+              onChangeText={(text) => setLocation(text)}
+            />
+            {/* <Text>{text}</Text> */}
+          </View>
+          {/* Botão de submit */}
+          <Pressable
+            onPress={uploadImage}
+            style={[styles.submitBtnContainer, styles.shadowProps]}
+          >
+            <Text style={styles.submitBtnText}>UPLOAD FILE</Text>
+            <View style={styles.submitBtnCircle}>
+              <Icon
+                style={styles.submitBtn}
+                name='arrow-forward-ios'
+                size={20}
+              />
+            </View>
+          </Pressable>
+        </KeyboardAvoidingView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -183,17 +228,17 @@ export default NewPost;
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
     marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   navbar: {
-    width: '90%',
+    width: '55%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginLeft: 'auto',
-    marginRight: 'auto',
+    marginLeft: '5%',
   },
   previewImage: {
     width: '90%',
@@ -245,7 +290,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 8,
     width: '50%',
-    marginTop: 15,
+    marginVertical: 25,
     marginLeft: 'auto',
     marginRight: 'auto',
     backgroundColor: '#FF6969',

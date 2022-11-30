@@ -10,6 +10,7 @@ import HomeScreen from './screens/HomeScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import NewPost from './screens/NewPost';
 import Posts from './screens/Posts';
+import Post from './screens/Post';
 
 // Método para criar o stack
 const Stack = createNativeStackNavigator();
@@ -39,9 +40,14 @@ export default function App() {
           component={NewPost}
         />
         <Stack.Screen
-          // options={{ headerShown: false }}
+          options={{ headerShown: false }}
           name='Posts'
           component={Posts}
+        />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name='Post'
+          component={Post}
         />
       </Stack.Navigator>
     </NavigationContainer>
